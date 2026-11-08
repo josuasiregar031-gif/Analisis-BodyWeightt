@@ -1,0 +1,365 @@
+[analisis-bodyweight.html](https://github.com/user-attachments/files/34540695/analisis-bodyweight.html)
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Analisis BodyWeight</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: header + tab bar of 5 feature panels, one panel visible at a time, like the program's menu */
+:root{
+  --bg:#f3f6f6; --surface:#ffffff; --fg:#14262b; --muted:#5b6f74; --line:#d6e0e1;
+  --accent:#0f6b73; --accent-fg:#ffffff; --accent-soft:#dcefef;
+  --c-insuf:#2a64b8; --c-normal:#2c8a55; --c-over:#b87a12; --c-obes:#b8372f;
+  --f-body:"IBM Plex Sans",system-ui,sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1a1d; --surface:#152428; --fg:#e4eeef; --muted:#8fa6aa; --line:#27393d;
+  --accent:#5cc4cc; --accent-fg:#0b1a1c; --accent-soft:#183437;
+  --c-insuf:#6ba3f0; --c-normal:#5cc98a; --c-over:#e3b04b; --c-obes:#f0847c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1a1d; --surface:#152428; --fg:#e4eeef; --muted:#8fa6aa; --line:#27393d;
+  --accent:#5cc4cc; --accent-fg:#0b1a1c; --accent-soft:#183437;
+  --c-insuf:#6ba3f0; --c-normal:#5cc98a; --c-over:#e3b04b; --c-obes:#f0847c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+h1{font-size:1.6rem;margin:0;font-weight:600;text-wrap:balance;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:2px 0 0;font-size:.9rem}
+.src{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.src b{font-family:var(--f-mono);font-weight:500;color:var(--fg)}
+button,.btn{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:7px 12px;border-radius:6px;font-size:.85rem}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:500}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+nav{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line)}
+nav button{background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:10px 14px;font-size:.92rem;white-space:nowrap;margin-bottom:-1px}
+nav button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+nav small{font-family:var(--f-mono);font-size:.7rem;margin-right:6px;opacity:.7}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font-size:1.1rem}
+.hint{color:var(--muted);font-size:.85rem;margin:0}
+.scroll{overflow-x:auto;max-height:480px;overflow-y:auto;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{padding:7px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--accent-soft);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+.pill{display:inline-block;padding:1px 9px;border-radius:99px;font-size:.78rem;font-weight:500;border:1px solid currentColor}
+.k-insuf{color:var(--c-insuf)}.k-normal{color:var(--c-normal)}.k-over{color:var(--c-over)}.k-obes{color:var(--c-obes)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+input[type=text]{font:inherit;font-family:var(--f-mono);padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);min-width:0;flex:1 1 200px;max-width:320px}
+.found{border:1px solid var(--line);border-radius:6px;padding:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.found div span{display:block;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.found div b{font-family:var(--f-mono);font-weight:500}
+.msg{padding:10px 14px;border-radius:6px;background:var(--accent-soft)}
+.msg.bad{background:transparent;border:1px solid var(--c-obes);color:var(--c-obes)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.tile{border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.tile span{display:block;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tile b{display:block;font-family:var(--f-mono);font-size:1.45rem;font-weight:500;font-variant-numeric:tabular-nums}
+.tile i{font-style:normal;font-size:.8rem;color:var(--muted);font-family:var(--f-mono)}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:150px 1fr 36px;align-items:center;gap:10px;font-size:.88rem}
+.bar .track{height:18px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bar .fill{height:100%;background:currentColor;border-radius:3px}
+.bar em{font-style:normal;font-family:var(--f-mono);text-align:right}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.group{border:1px solid var(--line);border-radius:6px;padding:12px;min-width:0}
+.group h3{margin:0 0 8px;font-size:.95rem;display:flex;justify-content:space-between;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chips span{font-family:var(--f-mono);font-size:.75rem;background:var(--bg);border:1px solid var(--line);padding:1px 6px;border-radius:4px}
+details{border:1px solid var(--line);border-radius:6px;padding:8px 12px}
+summary{cursor:pointer;font-weight:500}
+pre{margin:0;font-family:var(--f-mono);font-size:.82rem;white-space:pre-wrap;overflow-x:auto;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:14px}
+.theme{margin-left:auto}
+@media (max-width:520px){.bar{grid-template-columns:110px 1fr 30px}}
+@media (prefers-reduced-motion:no-preference){.bar .fill{transition:width .4s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Analisis BodyWeight</h1>
+      <p class="sub">Dataset BodyWeightMetrics: baca, cari, hitung IMT, kelompokkan, dan buat laporan.</p>
+    </div>
+    <div class="src">
+      <span>Sumber: <b id="srcName">BodyWeightMetrics.txt</b> · <b id="srcCount">0</b> rekaman</span>
+      <input type="file" id="fileIn" accept=".txt,.csv" hidden>
+      <label class="btn" for="fileIn" tabindex="0" id="fileLbl">Muat file .txt lain</label>
+    </div>
+  </header>
+
+  <nav role="tablist" id="tabs">
+    <button role="tab" data-t="data" aria-selected="true"><small>1</small>Tampilkan Data</button>
+    <button role="tab" data-t="cari" aria-selected="false"><small>2</small>Cari ID</button>
+    <button role="tab" data-t="stat" aria-selected="false"><small>3</small>Statistik</button>
+    <button role="tab" data-t="grup" aria-selected="false"><small>4</small>Pengelompokan</button>
+    <button role="tab" data-t="lap" aria-selected="false"><small>5</small>Laporan</button>
+  </nav>
+
+  <section class="panel" id="p-data">
+    <h2>Seluruh data</h2>
+    <p class="hint" id="dataHint"></p>
+    <div class="scroll"><table><thead><tr>
+      <th>ID</th><th>Gender</th><th class="n">Usia</th><th class="n">Tinggi (m)</th><th class="n">Berat (kg)</th><th class="n">Aktivitas</th><th class="n">IMT</th><th>Kategori</th>
+    </tr></thead><tbody id="tbody"></tbody></table></div>
+  </section>
+
+  <section class="panel" id="p-cari" hidden>
+    <h2>Cari berdasarkan ID</h2>
+    <form class="row" id="cariForm">
+      <input type="text" id="idIn" placeholder="contoh: BW0667" autocomplete="off" aria-label="ID yang dicari">
+      <button class="btn primary" type="submit">Cari</button>
+    </form>
+    <div id="cariOut"><p class="hint">Masukkan ID lalu tekan Cari.</p></div>
+  </section>
+
+  <section class="panel" id="p-stat" hidden>
+    <h2>Statistik</h2>
+    <div class="tiles" id="tiles"></div>
+    <h2 style="font-size:.95rem">Jumlah per kategori</h2>
+    <div class="bars" id="bars"></div>
+  </section>
+
+  <section class="panel" id="p-grup" hidden>
+    <h2>Pengelompokan</h2>
+    <p class="hint">Empat kelompok utama dengan daftar ID, lalu rekap kategori asli beserta nilai IMT.</p>
+    <div class="groups" id="groups"></div>
+    <div id="rekap" style="display:flex;flex-direction:column;gap:8px"></div>
+  </section>
+
+  <section class="panel" id="p-lap" hidden>
+    <h2>Laporan_BodyWeight.txt</h2>
+    <p class="hint">Isi laporan yang dibuat dari data. Salin dan tempel ke file .txt milikmu.</p>
+    <div class="row"><button class="btn primary" id="copyBtn" type="button">Salin laporan</button></div>
+    <pre id="report"></pre>
+  </section>
+</div>
+
+<script>
+var CSV = `ID,JenisKelamin,Usia,TinggiMeter,BeratKg,AktivitasFisik,KategoriBeratBadan
+BW0667,Female,18.909439,1.732096,50,1.853425,Insufficient_Weight
+BW1953,Female,19.783234,1.747962,133.936535,1.429256,Obesity_Type_III
+BW1465,Male,20.654752,1.780791,102.921218,1.251665,Obesity_Type_I
+BW2104,Female,21.016849,1.724268,133.033523,1.537639,Obesity_Type_III
+BW0254,Female,26,1.59,47,0,Normal_Weight
+BW0651,Female,23.035829,1.598612,42.993937,1.612248,Insufficient_Weight
+BW1536,Male,30.02019,1.75834,112.010504,0,Obesity_Type_II
+BW1794,Male,30.71516,1.650189,101.141277,1.889937,Obesity_Type_II
+BW0095,Female,24,1.6,48,2,Normal_Weight
+BW0785,Female,16.941489,1.551288,54.93242,0.110174,Overweight_Level_I
+BW0264,Male,23,1.74,53,3,Insufficient_Weight
+BW1392,Female,22.804818,1.613119,82.636162,0.742113,Obesity_Type_I
+BW1104,Male,18.88485,1.699667,79.67793,0.110174,Overweight_Level_II
+BW0167,Female,29,1.74,72,0,Normal_Weight
+BW0997,Female,22.909992,1.700038,80,0.973114,Overweight_Level_II
+BW0504,Female,18.306615,1.7456,133.03441,1.586525,Obesity_Type_III
+BW0933,Male,22.828435,1.710415,75.142858,0.925118,Overweight_Level_I
+BW1646,Male,25.036269,1.874519,121.244969,1.356468,Obesity_Type_II
+BW0824,Female,21.909534,1.611356,68.06609,1.236114,Overweight_Level_I
+BW0297,Female,21,1.53,53,2,Normal_Weight
+BW1379,Male,32.895637,1.783901,103.771371,2.113992,Obesity_Type_I
+BW1904,Female,19.137495,1.716521,127.642324,0.912334,Obesity_Type_III
+BW1429,Male,21.679158,1.741393,98.182498,2.462269,Obesity_Type_I
+BW0854,Female,19,1.779882,80.091886,3,Overweight_Level_I
+BW1308,Male,22.936098,1.702825,93.638318,0.455216,Obesity_Type_I
+BW1673,Male,30.796262,1.668478,100.543983,1.738267,Obesity_Type_II
+BW0797,Female,31.539393,1.657496,73.641633,0,Overweight_Level_I
+BW0550,Female,29.970445,1.610863,49.516027,0.821977,Insufficient_Weight
+BW0559,Male,17.486869,1.836669,58.943347,2,Insufficient_Weight
+BW0141,Male,23,1.89,65,1,Insufficient_Weight
+BW0440,Female,19,1.6,60,0,Normal_Weight
+BW0816,Male,21.086512,1.863685,89.558854,0,Overweight_Level_I
+BW1346,Female,19.431662,1.631662,82,0,Obesity_Type_I
+BW1655,Male,24.5822,1.769933,117.708705,1.046878,Obesity_Type_II
+BW1942,Female,26,1.618867,110.777391,0,Obesity_Type_III
+BW0911,Female,33.732714,1.679725,74.885222,0.261274,Overweight_Level_I
+BW0285,Male,20,1.77,70,1,Normal_Weight
+BW1121,Male,23.806789,1.732492,84.557797,0.458237,Overweight_Level_II
+BW1059,Female,19.911246,1.530248,68.85097,0.678943,Overweight_Level_II
+BW1064,Female,45,1.675953,79.66832,0,Overweight_Level_II
+BW0162,Male,55,1.65,80,1,Overweight_Level_II
+BW1870,Female,26,1.621245,111.267334,0,Obesity_Type_III
+BW0257,Male,18,1.75,85,1,Overweight_Level_II
+BW1970,Female,25.954995,1.592529,102.874549,0.006265,Obesity_Type_III
+BW0612,Female,22.209706,1.593847,44.050251,1.967234,Insufficient_Weight
+BW1380,Male,38.748307,1.782067,103.586342,2.999918,Obesity_Type_I
+BW1725,Male,33.293166,1.696412,103.250355,1.987296,Obesity_Type_II
+BW1564,Male,33.55336,1.699793,103.841672,1.982379,Obesity_Type_II
+BW0296,Female,16,1.66,58,0,Normal_Weight
+BW0691,Male,17.521754,1.757958,52.09432,0.998391,Insufficient_Weight`;
+var data = [];
+
+/* Fitur 1: membaca dataset */
+function bacaDataset(teks){
+  var baris = teks.replace(/\r/g,"").split("\n");
+  var hasil = [];
+  for (var i = 1; i < baris.length; i++){            // baris 0 = header
+    var b = baris[i].trim();
+    if (b === "") continue;
+    var k = b.split(",");
+    if (k.length < 7) continue;
+    var d = {ID:k[0], JenisKelamin:k[1], Usia:parseFloat(k[2]), TinggiMeter:parseFloat(k[3]),
+             BeratKg:parseFloat(k[4]), AktivitasFisik:parseFloat(k[5]), KategoriBeratBadan:k[6]};
+    d.IMT = hitungIMT(d.BeratKg, d.TinggiMeter);
+    hasil.push(d);
+  }
+  return hasil;
+}
+
+/* Fitur 3: statistik */
+function hitungIMT(berat, tinggi){ return berat / (tinggi * tinggi); }
+function hitungStatistik(arr){
+  var tt=0, tb=0, ti=0, mx=arr[0], mn=arr[0];
+  for (var i=0;i<arr.length;i++){
+    tt+=arr[i].TinggiMeter; tb+=arr[i].BeratKg; ti+=arr[i].IMT;
+    if (arr[i].IMT > mx.IMT) mx=arr[i];
+    if (arr[i].IMT < mn.IMT) mn=arr[i];
+  }
+  var n=arr.length;
+  return {jumlah:n, rt:tt/n, rb:tb/n, ri:ti/n, mx:mx, mn:mn};
+}
+
+/* Fitur 2: cari */
+function cariID(arr, id){
+  id = id.trim().toUpperCase();
+  for (var i=0;i<arr.length;i++){ if (arr[i].ID.toUpperCase() === id) return arr[i]; }
+  return null;
+}
+
+/* Fitur 4: pengelompokan */
+function kelompokkan(arr){
+  var g = {Normal_Weight:[], Insufficient_Weight:[], Overweight:[], Obesity:[]};
+  var asli = {};
+  for (var i=0;i<arr.length;i++){
+    var d = arr[i], k = d.KategoriBeratBadan;
+    if (k === "Normal_Weight") g.Normal_Weight.push(d.ID);
+    else if (k === "Insufficient_Weight") g.Insufficient_Weight.push(d.ID);
+    else if (k.indexOf("Overweight") === 0) g.Overweight.push(d.ID);
+    else if (k.indexOf("Obesity") === 0) g.Obesity.push(d.ID);
+    if (!asli[k]) asli[k] = [];
+    asli[k].push({id:d.ID, imt:d.IMT});
+  }
+  return {g:g, asli:asli};
+}
+
+/* Fitur 5/6: laporan */
+function buatLaporan(arr){
+  var s = hitungStatistik(arr), r = kelompokkan(arr);
+  var t = "LAPORAN ANALISIS BODY WEIGHT METRICS\n" + "=".repeat(50) + "\n";
+  t += "Jumlah data              : " + s.jumlah + "\n";
+  t += "Rata-rata TinggiMeter    : " + s.rt.toFixed(4) + " m\n";
+  t += "Rata-rata BeratKg        : " + s.rb.toFixed(4) + " kg\n";
+  t += "Rata-rata IMT            : " + s.ri.toFixed(4) + "\n";
+  t += "IMT tertinggi            : " + s.mx.IMT.toFixed(4) + " (ID: " + s.mx.ID + ")\n";
+  t += "IMT terendah             : " + s.mn.IMT.toFixed(4) + " (ID: " + s.mn.ID + ")\n";
+  t += "\nREKAP KategoriBeratBadan\n" + "-".repeat(50) + "\n";
+  for (var k in r.asli){ t += (k + " ".repeat(25)).slice(0,25) + ": " + r.asli[k].length + " data\n"; }
+  return t;
+}
+
+/* tampilan */
+var $ = function(id){ return document.getElementById(id); };
+function kls(k){ return k==="Normal_Weight"?"k-normal":k==="Insufficient_Weight"?"k-insuf":k.indexOf("Overweight")===0?"k-over":"k-obes"; }
+function pill(k){ return '<span class="pill '+kls(k)+'">'+k.replace(/_/g," ")+'</span>'; }
+function f(x,n){ return x.toFixed(n); }
+
+function render(){
+  $("srcCount").textContent = data.length;
+  $("dataHint").textContent = "Total data: " + data.length + " rekaman. IMT = BeratKg / (TinggiMeter ** 2).";
+  var h = "";
+  for (var i=0;i<data.length;i++){
+    var d = data[i];
+    h += "<tr><td>"+d.ID+"</td><td>"+d.JenisKelamin+"</td><td class='n'>"+f(d.Usia,2)+"</td><td class='n'>"+f(d.TinggiMeter,2)+
+         "</td><td class='n'>"+f(d.BeratKg,2)+"</td><td class='n'>"+f(d.AktivitasFisik,2)+"</td><td class='n'>"+f(d.IMT,2)+"</td><td>"+pill(d.KategoriBeratBadan)+"</td></tr>";
+  }
+  $("tbody").innerHTML = h;
+
+  var s = hitungStatistik(data), r = kelompokkan(data);
+  $("tiles").innerHTML =
+    '<div class="tile"><span>Jumlah data</span><b>'+s.jumlah+'</b></div>'+
+    '<div class="tile"><span>Rata-rata tinggi</span><b>'+f(s.rt,4)+'</b><i>meter</i></div>'+
+    '<div class="tile"><span>Rata-rata berat</span><b>'+f(s.rb,4)+'</b><i>kg</i></div>'+
+    '<div class="tile"><span>Rata-rata IMT</span><b>'+f(s.ri,4)+'</b></div>'+
+    '<div class="tile"><span>IMT tertinggi</span><b>'+f(s.mx.IMT,4)+'</b><i>ID '+s.mx.ID+'</i></div>'+
+    '<div class="tile"><span>IMT terendah</span><b>'+f(s.mn.IMT,4)+'</b><i>ID '+s.mn.ID+'</i></div>';
+
+  var order = [["Insufficient_Weight","k-insuf"],["Normal_Weight","k-normal"],["Overweight","k-over"],["Obesity","k-obes"]];
+  var mxn = 1; order.forEach(function(o){ mxn = Math.max(mxn, r.g[o[0]].length); });
+  $("bars").innerHTML = order.map(function(o){
+    var n = r.g[o[0]].length;
+    return '<div class="bar '+o[1]+'"><span style="color:var(--fg)">'+o[0].replace(/_/g," ")+'</span><div class="track"><div class="fill" style="width:'+(n/mxn*100)+'%"></div></div><em style="color:var(--fg)">'+n+'</em></div>';
+  }).join("");
+
+  $("groups").innerHTML = order.map(function(o){
+    var ids = r.g[o[0]];
+    return '<div class="group"><h3><span class="'+o[1]+'">'+o[0].replace(/_/g," ")+'</span><span>'+ids.length+' data</span></h3><div class="chips">'+
+      ids.map(function(x){return "<span>"+x+"</span>";}).join("")+'</div></div>';
+  }).join("");
+
+  var rk = "<h2 style='font-size:.95rem'>Rekap kategori asli</h2>";
+  for (var k in r.asli){
+    rk += '<details><summary><span class="'+kls(k)+'">'+k.replace(/_/g," ")+'</span> · '+r.asli[k].length+' data</summary><div class="chips" style="margin-top:8px">'+
+      r.asli[k].map(function(x){return "<span>"+x.id+" · IMT "+f(x.imt,2)+"</span>";}).join("")+'</div></details>';
+  }
+  $("rekap").innerHTML = rk;
+  $("report").textContent = buatLaporan(data);
+}
+
+/* tab (menu) */
+$("tabs").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if(!b) return;
+  var t = b.getAttribute("data-t");
+  var all = $("tabs").querySelectorAll("button");
+  for (var i=0;i<all.length;i++){ all[i].setAttribute("aria-selected", all[i]===b ? "true":"false"); }
+  ["data","cari","stat","grup","lap"].forEach(function(x){ $("p-"+x).hidden = (x!==t); });
+});
+
+/* cari ID */
+$("cariForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var v = $("idIn").value, h = cariID(data, v);
+  if (h){
+    $("cariOut").innerHTML = '<div class="found">'+
+      [["ID",h.ID],["Jenis kelamin",h.JenisKelamin],["Usia",f(h.Usia,2)+" tahun"],["Tinggi",f(h.TinggiMeter,2)+" m"],
+       ["Berat",f(h.BeratKg,2)+" kg"],["Aktivitas fisik",f(h.AktivitasFisik,2)],["IMT",f(h.IMT,2)]]
+      .map(function(p){return "<div><span>"+p[0]+"</span><b>"+p[1]+"</b></div>";}).join("")+
+      '<div><span>Kategori</span>'+pill(h.KategoriBeratBadan)+'</div></div>';
+  } else {
+    var teks = v.trim() === "" ? "Masukkan ID terlebih dahulu." : "Data dengan ID '"+v.trim().toUpperCase().replace(/[<>&]/g,"")+"' tidak ditemukan.";
+    $("cariOut").innerHTML = '<div class="msg bad">'+teks+'</div>';
+  }
+});
+
+/* salin laporan */
+$("copyBtn").addEventListener("click", function(){
+  var teks = $("report").textContent, btn = $("copyBtn");
+  function ok(){ btn.textContent = "Tersalin"; setTimeout(function(){ btn.textContent = "Salin laporan"; }, 1500); }
+  function fallback(){
+    var r = document.createRange(); r.selectNodeContents($("report"));
+    var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    btn.textContent = "Teks terpilih, tekan Ctrl+C";
+  }
+  try { navigator.clipboard.writeText(teks).then(ok, fallback); } catch(e){ fallback(); }
+});
+
+/* muat file lain */
+$("fileIn").addEventListener("change", function(e){
+  var fl = e.target.files[0]; if(!fl) return;
+  var rd = new FileReader();
+  rd.onload = function(){
+    var arr = bacaDataset(String(rd.result));
+    if (arr.length === 0){ $("srcName").textContent = fl.name + " (format tidak sesuai)"; return; }
+    data = arr; $("srcName").textContent = fl.name; render();
+  };
+  rd.readAsText(fl);
+});
+$("fileLbl").addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); $("fileIn").click(); }});
+
+data = bacaDataset(CSV);
+render();
+</script>
+
+</body></html>
